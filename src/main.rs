@@ -21,7 +21,21 @@ pub struct DataReader {
 }
 
 impl DataReader {
-    
+
+    /// Return an Observation instance.
+    ///
+    /// # Arguments
+    ///
+    /// * `data` - A line of comma-delimited input data.
+    ///
+    pub fn  observation_factory(data: String) -> Observation {
+        let label = data;
+        let pixels = Vec::new();
+        
+        // TODO
+
+        Observation::new(label.to_string(), pixels)
+    }
 }
 
 fn main() {
@@ -34,4 +48,8 @@ fn main() {
 
     let observation = Observation::new(label.to_string(), pixels);
     println!("{:#?}", observation);
+
+    let data = "";
+    let obs = DataReader::observation_factory(data.to_string());
+    println!("{:#?}", obs);
 }
