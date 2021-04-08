@@ -1,6 +1,60 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
+// use std::io::Read;
+
+#[derive(Debug)]
+/// A digit from 0 to 9 and its representation in pixels.
+pub struct Observation {
+    label: String,
+    pixels: Vec<i32> 
+}
+
+impl Observation {
+    pub fn new(label: String, pixels: Vec<i32>) -> Observation {
+        let label = label;
+        let pixels = pixels;
+
+        Observation { label, pixels }
+    }
+}
+
+/// Compares two images pixel by pixel, computing each difference, and adding up their absolute values.
+/// Identical images will have a distance of zero, and the further apart two pixels are, the higher the distance between the two
+/// images will be. 
+pub struct ManhattanDistance {}
+
+impl ManhattanDistance {
+    /// Compute the distance between two images. 
+    /// Identical images will have a distance of zero.
+    ///
+    /// # Arguments
+    ///
+    /// * `pixels1` - The pixels representing the first image.
+    /// * `pixels2` - The pixels representing the second image.
+    pub fn between(pixels1: Vec<i32>, pixels2: Vec<i32>) -> f64 {
+        assert_eq!(pixels1.len(), pixels2.len(), "Inconsistent image sizes.");
+
+        let length = pixels1.len();
+        let mut distance: f64 = 0.0;
+
+        for i in 0..length {
+            let difference = f64::from(pixels1[i] - pixels2[i]).abs();
+            distance += difference;
+        }
+
+        distance
+    }
+}
+
+pub struct BasicClassifier {
+
+}
+
+impl BasicClassifier {
+
+}
+
 fn main()
 {
     let file = File::open("data.txt").unwrap();
@@ -35,24 +89,6 @@ fn main()
 }
 
 
-
-// use std::io::Read;
-
-#[derive(Debug)]
-/// A digit from 0 to 9 and its representation in pixels.
-pub struct Observation {
-    label: String,
-    pixels: Vec<i32> 
-}
-
-impl Observation {
-    pub fn new(label: String, pixels: Vec<i32>) -> Observation {
-        let label = label;
-        let pixels = pixels;
-
-        Observation { label, pixels }
-    }
-}
 
 // /// Reads images from a file and transforms them to a form suitable for analyis.
 // pub struct DataReader {
