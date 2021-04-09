@@ -25,14 +25,14 @@ impl Observation {
 pub struct ManhattanDistance {}
 
 impl ManhattanDistance {
-    /// Compute the distance between two images. 
+    /// Computes the distance between two images. 
     /// Identical images will have a distance of zero.
     ///
     /// # Arguments
     ///
     /// * `pixels1` - The pixels representing the first image.
     /// * `pixels2` - The pixels representing the second image.
-    pub fn between(pixels1: Vec<i32>, pixels2: Vec<i32>) -> f64 {
+    pub fn between(pixels1: &Vec<i32>, pixels2: &Vec<i32>) -> f64 {
         assert_eq!(pixels1.len(), pixels2.len(), "Inconsistent image sizes.");
 
         let length = pixels1.len();
@@ -48,11 +48,37 @@ impl ManhattanDistance {
 }
 
 pub struct BasicClassifier {
-
+    data: Vec<Observation>
 }
 
 impl BasicClassifier {
+    pub fn new(data: Vec<Observation>) -> BasicClassifier {
+        let data = data;
 
+        BasicClassifier { data }
+    }
+
+    /// Predicts the digit that the image corresponds to.
+    ///
+    /// # Arguments
+    ///
+    /// `pixels` -  The pixels representing the image.
+    ///
+    pub fn predict(self, pixels: Vec<i32>) -> String {
+        let mut shortest = f64::MAX;
+        let mut current_best = Observation::new("".to_string(), vec![0]);
+        let data = self.data;
+
+        for obs in data {
+            let dist = ManhattanDistance::between(&obs.pixels, &pixels);
+            if dist < shortest {
+                shortest = dist;
+                current_best = obs;
+            }
+        }
+
+        current_best.label
+    }
 }
 
 fn main()
