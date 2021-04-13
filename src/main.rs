@@ -1,17 +1,15 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-// use std::io::Read;
-
 #[derive(Debug)]
 /// A digit from 0 to 9 and its representation in pixels.
-pub struct Observation {
-    label: String,
+pub struct Observation<'a> {
+    label: &'a str,
     pixels: Vec<i32> 
 }
 
-impl Observation {
-    pub fn new(label: String, pixels: Vec<i32>) -> Observation {
+impl<'a> Observation<'a> {
+    pub fn new(label: &str, pixels: Vec<i32>) -> Observation {
         let label = label;
         let pixels = pixels;
 
@@ -47,11 +45,11 @@ impl ManhattanDistance {
     }
 }
 
-pub struct BasicClassifier {
-    data: Vec<Observation>
+pub struct BasicClassifier<'a> {
+    data: Vec<Observation<'a>>
 }
 
-impl BasicClassifier {
+impl<'a> BasicClassifier<'a> {
     pub fn new(data: Vec<Observation>) -> BasicClassifier {
         let data = data;
 
@@ -64,9 +62,9 @@ impl BasicClassifier {
     ///
     /// `pixels` -  The pixels representing the image.
     ///
-    pub fn predict(self, pixels: Vec<i32>) -> String {
+    pub fn predict(self, pixels: &'a Vec<i32>) -> &str {
         let mut shortest = f64::MAX;
-        let mut current_best = Observation::new("".to_string(), vec![0]);
+        let mut current_best = Observation::new("", vec![0]);
         let data = self.data;
 
         for obs in data {
@@ -78,6 +76,24 @@ impl BasicClassifier {
         }
 
         current_best.label
+    }
+}
+
+pub struct Evaluator {}
+
+impl Evaluator {
+    /// "Scores" the prediction by comparing what the classifier predicts with the true value. If they match,
+    /// we record a 1, otherwise we record a 0. By using numbers like this rather than true/false values, we can
+    /// average this out to get the percentage correct.
+    pub fn score(obs: &Observation, classifier: &BasicClassifier) -> f64 {
+        let label = obs.label;
+        let prediction = &classifier.predict(&obs.pixels);
+        
+        if label == prediction {
+            1.0
+        } else {
+            0.0
+        }
     }
 }
 
@@ -106,71 +122,10 @@ fn main()
             pixels.push(pixel);
         }
 
-        let observation = Observation::new(label.to_string(), pixels);
+        let observation = Observation::new(label, pixels);
 
         observations.push(observation);
     }
 
     println!("{:?}", observations);
 }
-
-
-
-// /// Reads images from a file and transforms them to a form suitable for analyis.
-// pub struct DataReader {
-
-// }
-
-// impl DataReader {
-
-//     /// Return an Observation instance.
-//     ///
-//     /// # Arguments
-//     ///
-//     /// * `data` - A line of comma-delimited input data.
-//     ///
-//     pub fn  observation_factory(data: String) -> Observation {
-//         let label = data;
-//         let pixels = Vec::new();
-        
-//         // TODO
-
-//         Observation::new(label.to_string(), pixels)
-//     }
-// }
-
-// fn read_file() {
-//     let mut file = std::fs::File::open("..\\..\\data.txt").unwrap();
-//     let mut contents = String::new();
-//     file.read_to_string(&mut contents).unwrap();
-//     print!("{}", contents);
-// }
-
-// fn main() {
-//     let label = "Point 1";
-//     let mut pixels = Vec::new();
-//     pixels.push(1);
-//     pixels.push(2);
-//     pixels.push(3);
-//     pixels.push(4);
-
-//     let observation = Observation::new(label.to_string(), pixels);
-//     println!("{:#?}", observation);
-
-//     let data = "";
-//     let obs = DataReader::observation_factory(data.to_string());
-//     println!("{:#?}", obs);
-
-    // let v: Vec<&str> = "lion::tiger::leopard".split("::").collect();
-    // println!("{:?}", v);
-
-    // let data1 = "label,pixel0,pixel1,pixel2,pixel3,pixel4,pixel5";
-    // let pixels1: Vec<&str> = data1
-    //     .split(",")
-    //     .skip(1)
-    //     //.map(|s| s.parse().unwrap())
-    //     .collect();
-    // println!("{:?}", pixels1);
-
-//     read_file();    
-// }
