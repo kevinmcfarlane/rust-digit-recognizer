@@ -3,13 +3,13 @@ use std::io::{BufRead, BufReader};
 
 #[derive(Debug)]
 /// A digit from 0 to 9 and its representation in pixels.
-pub struct Observation<'a> {
-    label: &'a str,
+pub struct Observation {
+    label: String,
     pixels: Vec<i32> 
 }
 
-impl<'a> Observation<'a> {
-    pub fn new(label: &str, pixels: Vec<i32>) -> Observation {
+impl Observation {
+    pub fn new(label: String, pixels: Vec<i32>) -> Observation {
         let label = label;
         let pixels = pixels;
 
@@ -45,11 +45,11 @@ impl ManhattanDistance {
     }
 }
 
-pub struct BasicClassifier<'a> {
-    data: Vec<Observation<'a>>
+pub struct BasicClassifier {
+    data: Vec<Observation>
 }
 
-impl<'a> BasicClassifier<'a> {
+impl BasicClassifier {
     pub fn new(data: Vec<Observation>) -> BasicClassifier {
         let data = data;
 
@@ -62,9 +62,9 @@ impl<'a> BasicClassifier<'a> {
     ///
     /// `pixels` -  The pixels representing the image.
     ///
-    pub fn predict(self, pixels: &'a Vec<i32>) -> &str {
+    pub fn predict(self, pixels: &Vec<i32>) -> String {
         let mut shortest = f64::MAX;
-        let mut current_best = Observation::new("", vec![0]);
+        let mut current_best = Observation::new(String::from(""), vec![0]);
         let data = self.data;
 
         for obs in data {
@@ -122,7 +122,7 @@ fn main()
             pixels.push(pixel);
         }
 
-        let observation = Observation::new(label, pixels);
+        let observation = Observation::new(String::from(label), pixels);
 
         observations.push(observation);
     }
