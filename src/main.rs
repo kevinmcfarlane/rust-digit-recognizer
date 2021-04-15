@@ -45,17 +45,9 @@ impl ManhattanDistance {
     }
 }
 
-pub struct BasicClassifier {
-    //data: Vec<Observation>
-}
+pub struct BasicClassifier {}
 
 impl BasicClassifier {
-    // pub fn new(data: Vec<Observation>) -> BasicClassifier {
-    //     let data = data;
-
-    //     BasicClassifier { data }
-    // }
-
     /// Predicts the digit that the image corresponds to.
     ///
     /// # Arguments
@@ -122,9 +114,8 @@ impl Evaluator {
     }
 }
 
-fn main()
-{
-    let file = File::open("data.txt").unwrap();
+pub fn read_observations(training_path: &str) -> Vec<Observation>{
+    let file = File::open(training_path).unwrap();
     let reader = BufReader::new(file);
 
     // Skip header
@@ -152,5 +143,19 @@ fn main()
         observations.push(observation);
     }
 
-    println!("{:?}", observations);
+    observations
+}
+
+fn main()
+{
+    let training_path = "trainingsample.csv";
+    let training_set: Vec<Observation> = read_observations(training_path);
+    
+    let validation_path = "validationsample.csv";
+    let validation_set: Vec<Observation> = read_observations(validation_path);
+
+    let evaluator = Evaluator::new(training_set);
+    let percent_correct = evaluator.correct(validation_set);
+
+    println!("Correctly classified: {:?}", percent_correct);
 }
