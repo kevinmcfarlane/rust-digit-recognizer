@@ -9,6 +9,12 @@ pub struct Observation {
 }
 
 impl Observation {
+    /// Constructs a new instance from a label (a number representing an image) and a collection of pixels representing that image.
+    /// # Arguments
+    ///
+    /// * `label` - The number representing the image.
+    /// * `pixels` - The pixels representing the image.
+    ///
     pub fn new(label: &str, pixels: &Vec<i32>) -> Observation {
         let label = label;
         let pixels = pixels;
@@ -30,6 +36,7 @@ impl ManhattanDistance {
     ///
     /// * `pixels1` - The pixels representing the first image.
     /// * `pixels2` - The pixels representing the second image.
+    ///
     pub fn between(pixels1: &Vec<i32>, pixels2: &Vec<i32>) -> f64 {
         assert_eq!(pixels1.len(), pixels2.len(), "Inconsistent image sizes.");
 
@@ -45,23 +52,25 @@ impl ManhattanDistance {
     }
 }
 
+/// Classifies/predicts an image from a collection of pixels using a matching algorithm.
 pub struct BasicClassifier {}
 
 impl BasicClassifier {
-    /// Predicts the digit that the image corresponds to.
+    /// Predicts the digit that the image in pixels corresponds to.
     ///
     /// # Arguments
     ///
-    /// `pixels` -  The pixels representing the image.
+    /// * `training_set` -  The training set of observations.
+    /// * `pixels` -  The pixels representing the image.
     ///
-    pub fn predict(data: &Vec<Observation>, pixels: &Vec<i32>) -> String {
+    pub fn predict(training_set: &Vec<Observation>, pixels: &Vec<i32>) -> String {
         let mut shortest = f64::MAX;
         
         let default_label = "";
         let default_pixels: Vec<i32> = Vec::new();
         let mut current_best = Observation::new(default_label, &default_pixels);
 
-        for obs in data {
+        for obs in training_set {
             let dist = ManhattanDistance::between(&obs.pixels, &pixels);
             if dist < shortest {
                 shortest = dist;
@@ -73,11 +82,18 @@ impl BasicClassifier {
     }
 }
 
+/// Evaluates a model by computing the proportion of classifications it gets right.
 pub struct Evaluator {
     training_set: Vec<Observation>,
 }
 
 impl Evaluator {
+    /// Constructs a new instance from a training set of observations.
+    ///
+    /// # Arguments
+    ///
+    /// * `training_set` -  The training set of observations.
+    ///
     pub fn new(training_set: Vec<Observation>) -> Evaluator {
         let training_set = training_set;
 
@@ -91,14 +107,24 @@ impl Evaluator {
         let label = obs.label;
         let prediction = BasicClassifier::predict(&self.training_set, &obs.pixels);
         
+        print!("Digit: {} - ", label);
+        
         if label == prediction {
+            println!("Match");
             1.0
         } else {
+            println!("Mismatch");
             0.0
         }
     }
 
-    pub fn correct(&self, validation_set: Vec<Observation>) -> f64 {
+    /// Calculates the percentage (as a fraction < 1) of images that are correctly predicted.
+    ///
+    /// # Arguments
+    ///
+    /// * `validation_set` -  The validation set of observations.
+    ///
+    pub fn percent_correct(&self, validation_set: Vec<Observation>) -> f64 {
         let mut scores: Vec<f64> = Vec::new();
         let number_of_scores = validation_set.len();
 
@@ -114,8 +140,15 @@ impl Evaluator {
     }
 }
 
-pub fn read_observations(training_path: &str) -> Vec<Observation>{
-    let file = File::open(training_path).unwrap();
+/// Reads observations as comma separated labels (the numbers the pixels represent) and pixels 
+/// from the specified path and returns a collection of Observation instances.
+///
+/// # Arguments
+///
+/// * `path` -  The input path.
+///
+pub fn read_observations(path: &str) -> Vec<Observation>{
+    let file = File::open(path).unwrap();
     let reader = BufReader::new(file);
 
     // Skip header
@@ -139,7 +172,6 @@ pub fn read_observations(training_path: &str) -> Vec<Observation>{
         }
 
         let observation = Observation::new(label, &pixels);
-
         observations.push(observation);
     }
 
@@ -155,7 +187,8 @@ fn main()
     let validation_set: Vec<Observation> = read_observations(validation_path);
 
     let evaluator = Evaluator::new(training_set);
-    let percent_correct = evaluator.correct(validation_set);
+    let percent_correct = evaluator.percent_correct(validation_set);
+    let percent_correct = format!("{:.2}%", 100.0 * percent_correct);
 
-    println!("Correctly classified: {:?}", percent_correct);
+    println!("Correctly classified: {}", percent_correct);
 }
