@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use simple_stopwatch::Stopwatch;
 
 #[derive(Debug)]
 /// A digit from 0 to 9 and its representation in pixels.
@@ -180,6 +181,8 @@ pub fn read_observations(path: &str) -> Vec<Observation>{
 
 fn main()
 {
+    let sw = Stopwatch::start_new();
+
     let training_path = "trainingsample.csv";
     let training_set: Vec<Observation> = read_observations(training_path);
     
@@ -191,4 +194,7 @@ fn main()
     let percent_correct = format!("{:.2}%", 100.0 * percent_correct);
 
     println!("Correctly classified: {}", percent_correct);
+
+    let elapsed_seconds = sw.s();
+    println!("Time elapsed = {:.2}s", elapsed_seconds);
 }

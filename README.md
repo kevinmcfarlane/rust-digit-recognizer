@@ -42,7 +42,7 @@ Digit: 4 - Mismatch
 
 Correctly classified: 96.30%
 
-Here is a plot of one of the images. At the end there is some code that compares this to its prediction.
+Here is a plot of one of the images. 
 
 ![Image](digit.png)
 
