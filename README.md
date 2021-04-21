@@ -10,7 +10,7 @@ down by a human, and scanned in 28 x 28 pixels resolution, encoded in grayscale,
 >
 >Technically, this is known as a classification problem: Our goal is to separate images between known "categories," a.k.a. the classes (hence the word "classification"). In this case, we have ten classes, one for each single digit from 0 to 9. 
 
-The solution provided here (See src/main.rs) does not use any libraries, hence the designation "from-the-ground-up." 
+The solution provided here (See [src/main.rs]) does not use any libraries, hence the designation "from-the-ground-up." 
 
 The cost function used is [Manhattan distance].
 
@@ -46,7 +46,27 @@ Here is a plot of one of the images.
 
 ![Image](digit.png)
 
+## Performance
+
+How does the performance (timings) compare with the Python and C# versions? The C# version is from the  _[Machine Learning Projects for .NET Developers]_ book. The Python version you can find [here]. 
+
+Python - 22s
+
+C# - 1s
+
+Rust Debug - 12s
+
+Rust Release - 0.36s
+
+
+Rust release builds are _[much]_ faster than debug builds.
+
+>A release build typically runs much faster than a debug build. 10-100x speedups over debug builds are common!
+
 [Machine Learning Projects for .NET Developers]: <https://www.apress.com/gb/book/9781430267676>
 [Digit Recognizer]: <https://www.kaggle.com/c/digit-recognizer/overview>
 [Manhattan distance]: <https://en.wikipedia.org/wiki/Taxicab_geometry#Formal_definition>
+[src/main.rs]: <https://github.com/kevinmcfarlane/rust-digit-recognizer/blob/main/src/main.rs>
+[here]: <https://github.com/kevinmcfarlane/digit-recognizer>
+[much]: <https://nnethercote.github.io/perf-book/build-configuration.html>
 
