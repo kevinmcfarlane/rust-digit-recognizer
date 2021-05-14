@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use std::process;
 use simple_stopwatch::Stopwatch;
 
 #[derive(Debug)]
@@ -135,7 +136,7 @@ impl Evaluator {
         }
 
         let sum: f64 = Iterator::sum(scores.iter());
-        let average = f64::from(sum) / (number_of_scores as f64);
+        let average = sum / (number_of_scores as f64);
 
         average
     }
@@ -149,7 +150,10 @@ impl Evaluator {
 /// * `path` -  The input path.
 ///
 pub fn read_observations(path: &str) -> Vec<Observation>{
-    let file = File::open(path).unwrap();
+    let file = File::open(path).unwrap_or_else(|err| {
+        println!("Problem opening file: {}", err);
+        process::exit(1);
+    });
     let reader = BufReader::new(file);
 
     // Skip header
@@ -159,7 +163,10 @@ pub fn read_observations(path: &str) -> Vec<Observation>{
 
     for row in rows 
     {
-        let r = row.unwrap();
+        let r = row.unwrap_or_else(|err| {
+            println!("Problem extracting observation from collection: {}", err);
+            process::exit(1);
+        });
 
         let comma_separated: Vec<&str> = r.split(",").collect();
         let label = comma_separated[0];
@@ -168,7 +175,10 @@ pub fn read_observations(path: &str) -> Vec<Observation>{
         let mut pixels:  Vec<i32> = Vec::new();
 
         for pixel_string in pixel_strings {
-            let pixel: i32 = pixel_string.parse().unwrap();
+            let pixel: i32 = pixel_string.parse().unwrap_or_else(|err| {
+                println!("Problem converting pixel string into integer: {}", err);
+                process::exit(1);
+            });
             pixels.push(pixel);
         }
 
