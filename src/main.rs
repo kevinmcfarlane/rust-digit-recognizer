@@ -1,3 +1,7 @@
+//! # Digit Recognizer
+//!
+//! `rust-digit-recognizer` is a "from-the-ground-up" implementation of the Kaggle [Digit Recognizer](https://www.kaggle.com/c/digit-recognizer/overview) problem in machine learning.
+
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::process;
@@ -164,7 +168,7 @@ pub fn read_observations(path: &str) -> Vec<Observation>{
     for row in rows 
     {
         let r = row.unwrap_or_else(|err| {
-            println!("Problem extracting observation from collection: {}", err);
+            println!("Problem extracting observation row from input: {}", err);
             process::exit(1);
         });
 
@@ -189,6 +193,7 @@ pub fn read_observations(path: &str) -> Vec<Observation>{
     observations
 }
 
+/// After being fed a training set of images representing digits, the program predicts the digits in a new set of images and reports how many were correctly predicted.
 fn main()
 {
     let sw = Stopwatch::start_new();
@@ -203,7 +208,7 @@ fn main()
     let percent_correct = evaluator.percent_correct(validation_set);
     let percent_correct = format!("{:.2}%", 100.0 * percent_correct);
 
-    println!("Correctly classified: {}", percent_correct);
+    println!("Correctly predicted: {}", percent_correct);
 
     let elapsed_seconds = sw.s();
     println!("Time elapsed = {:.2}s", elapsed_seconds);
