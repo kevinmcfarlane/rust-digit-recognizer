@@ -6,7 +6,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::process;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 /// A digit from 0 to 9 and its representation in pixels.
 pub struct Observation {
     label: String,
@@ -20,7 +20,7 @@ impl Observation {
     /// * `label` - The number representing the image.
     /// * `pixels` - The pixels representing the image.
     ///
-    pub fn new(label: &str, pixels: &Vec<i32>) -> Observation {
+    pub fn new(label: &str, pixels: &[i32]) -> Observation {
         let label = label;
         let pixels = pixels;
 
@@ -42,7 +42,7 @@ impl ManhattanDistance {
     /// * `pixels1` - The pixels representing the first image.
     /// * `pixels2` - The pixels representing the second image.
     ///
-    pub fn between(pixels1: &Vec<i32>, pixels2: &Vec<i32>) -> f64 {
+    pub fn between(pixels1: &[i32], pixels2: &[i32]) -> f64 {
         assert_eq!(pixels1.len(), pixels2.len(), "Inconsistent image sizes.");
 
         let length = pixels1.len();
@@ -68,7 +68,7 @@ impl BasicClassifier {
     /// * `training_set` -  The training set of observations.
     /// * `pixels` -  The pixels representing the image.
     ///
-    pub fn predict(training_set: &Vec<Observation>, pixels: &Vec<i32>) -> String {
+    pub fn predict(training_set: &[Observation], pixels: &[i32]) -> String {
         let mut shortest = f64::MAX;
         
         let default_label = "";
@@ -99,22 +99,22 @@ impl Evaluator {
     ///
     /// * `training_set` -  The training set of observations.
     ///
-    pub fn new(training_set: Vec<Observation>) -> Evaluator {
+    pub fn new(training_set: &[Observation]) -> Evaluator {
         let training_set = training_set;
 
-        Evaluator { training_set }
+        Evaluator { training_set: training_set.to_vec() }
     }
 
     /// "Scores" the prediction by comparing what the classifier predicts with the true value. If they match,
     /// we record a 1, otherwise we record a 0. By using numbers like this rather than true/false values, we can
     /// average this out to get the percentage correct.
-    pub fn score(&self, obs: Observation) -> f64 {
-        let label = obs.label;
+    pub fn score(&self, obs: &Observation) -> f64 {
+        let label = &obs.label;
         let prediction = BasicClassifier::predict(&self.training_set, &obs.pixels);
         
         print!("Digit: {} - ", label);
         
-        if label == prediction {
+        if *label == prediction {
             println!("Match");
             1.0
         } else {
@@ -129,13 +129,13 @@ impl Evaluator {
     ///
     /// * `validation_set` -  The validation set of observations.
     ///
-    pub fn percent_correct(&self, validation_set: Vec<Observation>) -> f64 {
+    pub fn percent_correct(&self, validation_set: &[Observation]) -> f64 {
         let mut scores: Vec<f64> = Vec::new();
         let number_of_scores = validation_set.len();
 
         for obs in validation_set {
-            let score = *(&self.score(obs));
-            scores.push(score);
+            let score = &self.score(obs);
+            scores.push(*score);
         }
 
         let sum: f64 = Iterator::sum(scores.iter());

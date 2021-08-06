@@ -12,8 +12,8 @@ fn main()
     let validation_path = "validationsample.csv";
     let validation_set: Vec<Observation> = read_observations(validation_path);
 
-    let evaluator = Evaluator::new(training_set);
-    let percent_correct = evaluator.percent_correct(validation_set);
+    let evaluator = Evaluator::new(&training_set);
+    let percent_correct = evaluator.percent_correct(&validation_set);
     let percent_correct = format!("{:.2}%", 100.0 * percent_correct);
 
     println!("Correctly predicted: {}", percent_correct);
