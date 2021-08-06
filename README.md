@@ -54,9 +54,9 @@ Python - 22s
 
 C# - 1s
 
-Rust Debug - 12s
+Rust Debug - 6s
 
-Rust Release - 0.36s
+Rust Release - 0.28s
 
 
 Rust release builds are _[much]_ faster than debug builds.
