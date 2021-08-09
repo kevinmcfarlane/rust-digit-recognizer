@@ -54,7 +54,7 @@ Python - 22s
 
 C# - 1s
 
-Rust Debug - 6s
+Rust Debug - 5.72s
 
 Rust Release - 0.28s
 

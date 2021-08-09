@@ -76,7 +76,7 @@ impl BasicClassifier {
         let mut current_best = Observation::new(default_label, &default_pixels);
 
         for obs in training_set {
-            let dist = ManhattanDistance::between(&obs.pixels, &pixels);
+            let dist = ManhattanDistance::between(&obs.pixels, pixels);
             if dist < shortest {
                 shortest = dist;
                 current_best = Observation::new(&obs.label, &obs.pixels);
@@ -139,9 +139,8 @@ impl Evaluator {
         }
 
         let sum: f64 = Iterator::sum(scores.iter());
-        let average = sum / (number_of_scores as f64);
 
-        average
+        sum / (number_of_scores as f64)
     }
 }
 
@@ -171,7 +170,7 @@ pub fn read_observations(path: &str) -> Vec<Observation>{
             process::exit(1);
         });
 
-        let comma_separated: Vec<&str> = r.split(",").collect();
+        let comma_separated: Vec<&str> = r.split(',').collect();
         let label = comma_separated[0];
 
         let pixel_strings = &comma_separated[1..];
