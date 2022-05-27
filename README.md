@@ -52,7 +52,9 @@ How does the performance (timings) compare with the Python and C# versions? The 
 
 Python - 22s
 
-C# - 1s
+C# - 1.03s (.NET 4.8)
+
+C# - 0.52s (.NET 6.0)
 
 Rust Debug - 5.72s
 
