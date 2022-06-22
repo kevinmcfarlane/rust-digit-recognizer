@@ -112,7 +112,7 @@ impl Evaluator {
         let label = &obs.label;
         let prediction = BasicClassifier::predict(&self.training_set, &obs.pixels);
         
-        print!("Digit: {} - ", label);
+        print!("Digit: {label} - ");
         
         if *label == prediction {
             println!("Match");
@@ -153,7 +153,7 @@ impl Evaluator {
 ///
 pub fn read_observations(path: &str) -> Vec<Observation>{
     let file = File::open(path).unwrap_or_else(|err| {
-        eprintln!("Problem opening file: {}", err);
+        eprintln!("Problem opening file: {path} - {err}");
         process::exit(1);
     });
     let reader = BufReader::new(file);
@@ -166,7 +166,7 @@ pub fn read_observations(path: &str) -> Vec<Observation>{
     for row in rows 
     {
         let r = row.unwrap_or_else(|err| {
-            eprintln!("Problem extracting observation row from input: {}", err);
+            eprintln!("Problem extracting observation row from input: {err} in file: {path}");
             process::exit(1);
         });
 
@@ -178,7 +178,7 @@ pub fn read_observations(path: &str) -> Vec<Observation>{
 
         for pixel_string in pixel_strings {
             let pixel: i32 = pixel_string.parse().unwrap_or_else(|err| {
-                eprintln!("Problem converting pixel string into integer: {}", err);
+                eprintln!("Problem converting pixel string into integer: {err} in file: {path}");
                 process::exit(1);
             });
             pixels.push(pixel);

@@ -13,11 +13,11 @@ fn main()
     let validation_set: Vec<Observation> = read_observations(validation_path);
 
     let evaluator = Evaluator::new(&training_set);
-    let percent_correct = evaluator.percent_correct(&validation_set);
-    let percent_correct = format!("{:.2}%", 100.0 * percent_correct);
+    let percent_correct = 100.0 * evaluator.percent_correct(&validation_set);
+    let percent_correct = format!("{percent_correct:.2}%");
 
-    println!("Correctly predicted: {}", percent_correct);
+    println!("Correctly predicted: {percent_correct}");
 
     let elapsed_seconds = sw.s();
-    println!("Time elapsed = {:.2}s", elapsed_seconds);
+    println!("Time elapsed = {elapsed_seconds:.2}s");
 }
