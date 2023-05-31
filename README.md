@@ -12,7 +12,9 @@ down by a human, and scanned in 28 x 28 pixels resolution, encoded in grayscale,
 
 The solution provided here (See [src/main.rs]) does not use any libraries, hence the designation "from-the-ground-up." 
 
-The cost function used is [Manhattan distance].
+It makes use of cost functions. Two are implemented here - [Manhattan Distance and Euclidean Distance].
+
+Here is a formal definition of [Manhattan distance].
 
 ![Manhattan Distance](manhattan-distance.png)
 
@@ -71,4 +73,5 @@ Rust release builds are _[much]_ faster than debug builds.
 [src/main.rs]: <https://github.com/kevinmcfarlane/rust-digit-recognizer/blob/main/src/main.rs>
 [here]: <https://github.com/kevinmcfarlane/digit-recognizer>
 [much]: <https://nnethercote.github.io/perf-book/build-configuration.html>
+[Manhattan Distance and Euclidean Distance]: <https://machinelearningmastery.com/distance-measures-for-machine-learning/>
 
