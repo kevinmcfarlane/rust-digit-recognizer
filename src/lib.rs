@@ -69,11 +69,12 @@ impl BasicClassifier {
     /// * `pixels` -  The pixels representing the image.
     ///
     pub fn predict(training_set: &[Observation], pixels: &[i32]) -> String {
-        let mut shortest = f64::MAX;
         
         let default_label = "";
         let default_pixels: Vec<i32> = Vec::new();
+        
         let mut current_best = Observation::new(default_label, &default_pixels);
+        let mut shortest = f64::MAX;
 
         for obs in training_set {
             let dist = ManhattanDistance::between(&obs.pixels, pixels);
@@ -100,8 +101,6 @@ impl Evaluator {
     /// * `training_set` -  The training set of observations.
     ///
     pub fn new(training_set: &[Observation]) -> Evaluator {
-        let training_set = training_set;
-
         Evaluator { training_set: training_set.to_vec() }
     }
 
