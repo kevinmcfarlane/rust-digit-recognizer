@@ -123,21 +123,19 @@ impl<'a> Classifier for BasicClassifier<'a> {
     /// 
     fn predict(&self, pixels: &[i32]) -> String {
         
-        let default_label = "";
-        let default_pixels: Vec<i32> = Vec::new();
-        let mut current_best = Observation::new(default_label, &default_pixels);
+        let mut best_prediction = Observation::new("", &[]);
         
-        let mut shortest = f64::MAX;
+        let mut shortest_distance = f64::MAX;
 
-        for obs in &self.training_set {
-            let dist = self.distance.between(&obs.pixels, pixels);
-            if dist < shortest {
-                shortest = dist;
-                current_best = Observation::new(&obs.label, &obs.pixels);
+        for observation in &self.training_set {
+            let distance = self.distance.between(&observation.pixels, pixels);
+            if distance < shortest_distance {
+                shortest_distance = distance;
+                best_prediction = observation.clone();
             }
         }
 
-        current_best.label
+        best_prediction.label
     }
 }
 
@@ -151,24 +149,18 @@ impl Evaluator {
     /// 
     /// # Arguments
     ///
-    /// * `obs` - A digit from 0 to 9 and its representation in pixels.
+    /// * `observation` - A digit from 0 to 9 and its representation in pixels.
     /// * `classifier` - The classifier for predicting whether the observation matches its label.
     ///
-    pub fn score(&self, obs: &Observation, classifier: &dyn Classifier) -> f64 {
-        let label = &obs.label;
-        let prediction = classifier.predict(&obs.pixels);
+    pub fn score(&self, observation: &Observation, classifier: &dyn Classifier) -> f64 {
+        let label = (&observation.label).to_string();
+        let prediction = classifier.predict(&observation.pixels);
+    
+        println!("Digit: {} - {}", label, if label == prediction { "Match" } else { "Mismatch" });
         
-        print!("Digit: {label} - ");
-        
-        if *label == prediction {
-            println!("Match");
-            1.0
-        } else {
-            println!("Mismatch");
-            0.0
-        }
+        (label == prediction) as i32 as f64
     }
-
+    
     /// Calculates the percentage (as a fraction < 1) of images that are correctly predicted.
     ///
     /// # Arguments
@@ -177,17 +169,11 @@ impl Evaluator {
     /// * `classifier` - The classifier for predicting  whether an observation matches its label.
     ///
     pub fn percent_correct(&self, validation_set: &[Observation], classifier: &dyn Classifier) -> f64 {
-        let mut scores: Vec<f64> = Vec::new();
-        let number_of_scores = validation_set.len();
-
-        for obs in validation_set {
-            let score = &self.score(obs, classifier);
-            scores.push(*score);
-        }
-
-        let sum: f64 = Iterator::sum(scores.iter());
-
-        sum / (number_of_scores as f64)
+        validation_set
+            .iter()
+            .map(|observation| self.score(observation, classifier))
+            .sum::<f64>()
+            / validation_set.len() as f64
     }
 }
 
