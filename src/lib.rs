@@ -28,6 +28,13 @@ impl Observation {
     }
 }
 
+// Could also use derive (PartialEq) in place of this
+impl PartialEq for Observation {
+    fn eq(&self, other: &Self) -> bool {
+        self.label == other.label && self.pixels == other.pixels
+    }
+}
+
 pub trait Distance {
     fn between(&self, pixels1: &[i32], pixels2: &[i32]) -> f64;
 }
@@ -153,12 +160,11 @@ impl Evaluator {
     /// * `classifier` - The classifier for predicting whether the observation matches its label.
     ///
     pub fn score(&self, observation: &Observation, classifier: &dyn Classifier) -> f64 {
-        let label = (&observation.label).to_string();
         let prediction = classifier.predict(&observation.pixels);
     
-        println!("Digit: {} - {}", label, if label == prediction { "Match" } else { "Mismatch" });
+        println!("Digit: {} - {}", observation.label, if observation.label == prediction { "Match" } else { "Mismatch" });
         
-        (label == prediction) as i32 as f64
+        (observation.label == prediction) as i32 as f64
     }
     
     /// Calculates the percentage (as a fraction < 1) of images that are correctly predicted.
@@ -224,4 +230,100 @@ pub fn read_observations(path: &str) -> Vec<Observation>{
     observations
 }
 
-// /// Classifies/predicts an image from a collection of pixels using a matching algorithm.
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_observation_new() {
+        let observation = Observation::new("5", &[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+        assert_eq!(observation.label, "5");
+        assert_eq!(observation.pixels, vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    }
+
+    #[test]
+    fn test_manhattan_distance_between() {
+        let distance = ManhattanDistance {};
+        let pixels1 = vec![0, 0, 0, 0, 0];
+        let pixels2 = vec![1, 1, 1, 1, 1];
+        assert_eq!(distance.between(&pixels1, &pixels2), 5.0);
+    }
+
+    #[test]
+    fn test_euclidean_distance_between() {
+        let distance = EuclideanDistance {};
+        let pixels1 = vec![0, 0, 0, 0, 0];
+        let pixels2 = vec![3, 4, 5, 6, 7];
+        assert_eq!(distance.between(&pixels1, &pixels2), 135.0);
+    }
+
+    #[test]
+    fn test_basic_classifier_train() {
+        let mut classifier = BasicClassifier {
+            training_set: vec![],
+            distance: &ManhattanDistance {},
+        };
+        let training_set = vec![
+            Observation::new("0", &[0, 0, 0, 0, 0]),
+            Observation::new("1", &[1, 1, 1, 1, 1]),
+        ];
+        classifier.train(&training_set);
+
+        assert_eq!(classifier.training_set, training_set);
+        // assert!(classifier.training_set.iter().all(|item| training_set.contains(item)));
+        // assert!(training_set.iter().all(|item| classifier.training_set.contains(item)));
+    }
+
+    #[test]
+    fn test_basic_classifier_predict() {
+        let classifier = BasicClassifier {
+            training_set: vec![
+                Observation::new("0", &[0, 0, 0, 0, 0]),
+                Observation::new("1", &[1, 1, 1, 1, 1]),
+            ],
+            distance: &ManhattanDistance {},
+        };
+        let pixels = vec![0, 0, 0, 0, 0];
+        assert_eq!(classifier.predict(&pixels), "0");
+    }
+
+    #[test]
+    fn test_evaluator_percent_correct() {
+        let evaluator = Evaluator {};
+        let training_set = vec![
+            Observation::new("0", &[0, 0, 0, 0, 0]),
+            Observation::new("1", &[1, 1, 1, 1, 1]),
+        ];
+        let validation_set = vec![
+            Observation::new("0", &[0, 0, 0, 0, 0]),
+            Observation::new("1", &[1, 1, 1, 1, 1]),
+        ];
+        let mut classifier = BasicClassifier {
+            training_set: vec![],
+            distance: &ManhattanDistance {},
+        };
+
+        classifier.train(&training_set);
+
+        assert_eq!(evaluator.percent_correct(&validation_set, &classifier), 1.0);
+    }
+
+    #[test]
+    fn test_evaluator_score() {
+        let evaluator = Evaluator {};
+        let training_set = vec![
+            Observation::new("0", &[0, 0, 0, 0, 0]),
+            Observation::new("1", &[1, 1, 1, 1, 1]),
+        ];
+        let observation = Observation::new("0", &[0, 0, 0, 0, 0]);
+        let mut classifier = BasicClassifier {
+            training_set: vec![],
+            distance: &ManhattanDistance {},
+        };
+
+        classifier.train(&training_set);
+
+        assert_eq!(evaluator.score(&observation, &classifier), 1.0);
+    }
+}
