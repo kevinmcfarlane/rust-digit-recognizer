@@ -4,7 +4,9 @@
 
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use std::marker::Sync;
 use std::process;
+use rayon::prelude::*;
 
 #[derive(Debug, Clone)]
 /// A digit from 0 to 9 and its representation in pixels.
@@ -100,7 +102,7 @@ impl Distance for EuclideanDistance {
 }
 
 /// Trains a set of known observations and predicts the label of an image.
-pub trait Classifier {
+pub trait Classifier: Sync {
     fn train(&mut self, training_set: &[Observation]);
     fn predict(&self, pixels: &[i32]) -> String;
 }
@@ -110,6 +112,8 @@ pub struct BasicClassifier<'a> {
     pub training_set: Vec<Observation>,
     pub distance: &'a dyn Distance,
 }
+
+unsafe impl<'a> Sync for BasicClassifier<'a> {}
 
 impl<'a> Classifier for BasicClassifier<'a> {
     
@@ -176,7 +180,7 @@ impl Evaluator {
     ///
     pub fn percent_correct(&self, validation_set: &[Observation], classifier: &dyn Classifier) -> f64 {
         validation_set
-            .iter()
+            .par_iter()
             .map(|observation| self.score(observation, classifier))
             .sum::<f64>()
             / validation_set.len() as f64
@@ -271,8 +275,6 @@ mod tests {
         classifier.train(&training_set);
 
         assert_eq!(classifier.training_set, training_set);
-        // assert!(classifier.training_set.iter().all(|item| training_set.contains(item)));
-        // assert!(training_set.iter().all(|item| classifier.training_set.contains(item)));
     }
 
     #[test]

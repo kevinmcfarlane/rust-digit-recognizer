@@ -8,4 +8,5 @@ edition = "2018"
 
 [dependencies]
 pretty_assertions = "1.4.0"
+rayon = "1.7.0"
 simple-stopwatch="0.1.4"

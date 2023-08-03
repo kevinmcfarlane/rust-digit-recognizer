@@ -62,6 +62,8 @@ Rust Debug - 5.72s
 
 Rust Release - 0.28s
 
+Rust Release (with parallelised 'Correctly Classified' calculation) - 0.20s
+
 
 Rust release builds are _[much]_ faster than debug builds.
 
