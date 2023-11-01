@@ -52,7 +52,7 @@ Here is a plot of one of the images.
 
 How does the performance (timings) compare with the Python and C# versions? The C# version is from the  _[Machine Learning Projects for .NET Developers]_ book. The Python version you can find [here]. 
 
-Python - 22s
+Python - 12.32s (3.11.1 64-bit)
 
 C# - 1.03s (.NET 4.8)
 
