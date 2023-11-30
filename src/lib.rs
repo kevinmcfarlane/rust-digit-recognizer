@@ -133,20 +133,18 @@ impl<'a> Classifier for BasicClassifier<'a> {
     /// * `pixels` - The pixels representing the image.
     /// 
     fn predict(&self, pixels: &[i32]) -> String {
-        
-        let mut best_prediction = Observation::new("", &[]);
-        
-        let mut shortest_distance = f64::MAX;
-
-        for observation in &self.training_set {
+        let mut best_prediction = &self.training_set[0];
+        let mut shortest_distance = self.distance.between(&best_prediction.pixels, pixels);
+    
+        for observation in &self.training_set[1..] {
             let distance = self.distance.between(&observation.pixels, pixels);
             if distance < shortest_distance {
                 shortest_distance = distance;
-                best_prediction = observation.clone();
+                best_prediction = observation;
             }
         }
-
-        best_prediction.label
+    
+        best_prediction.label.to_string()
     }
 }
 
