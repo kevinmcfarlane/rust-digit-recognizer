@@ -23,9 +23,6 @@ impl Observation {
     /// * `pixels` - The pixels representing the image.
     ///
     pub fn new(label: &str, pixels: &[i32]) -> Observation {
-        let label = label;
-        let pixels = pixels;
-
         Observation { label: label.to_string(), pixels: pixels.to_vec() }
     }
 }
