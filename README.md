@@ -58,6 +58,8 @@ C# - 1.03s (.NET 4.8)
 
 C# - 0.52s (.NET 6.0)
 
+C# - 0.48s (.NET 10.0 with TieredCompilation and TieredPGO set to 0)
+
 Rust Debug - 5.72s
 
 Rust Release - 0.28s
